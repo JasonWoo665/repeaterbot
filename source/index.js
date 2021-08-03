@@ -5,14 +5,32 @@ const command = require('./command')
 const memberCount = require('./member-count')
 const eval = require('./eval')
 
+//youtube api
+const YouTube = require("discord-youtube-api"); 
+const youtube = new YouTube("google api key");
+
+
 const prefix = process.env.PREFIX
 
-let commandList = ['join','j','come','cc','clearchannel','CC','Clearchannel','status','cri','cry']
-let spamList = ['>NP','!NP','>np','!np','!Q','>Q','!q','>q','>FS','!FS','>fs','!fs','>P','!P','!p','>p','?CC','?cc','?clearchannel','?Clearchannel','**Playing**','<:youtube:841353157489852487>','<:x2:814990341052432435>']
+let commandMap = new Map();
+commandMap.set(['join'],['join','j','come'])
+commandMap.set(['clearchannel'],['cc','clearchannel','CC','Clearchannel'])
+commandMap.set(['status'],['status'])
+commandMap.set(['cry'],['cri','cry'])
+commandMap.set(['play'],['p','P','PLAY','play'])
 
+// group all commands into one list
+let commandList = []
+commandMap.forEach(singleCommand =>{
+    commandList = commandList.concat(singleCommand)
+})
 commandList.forEach( (value, key) =>{
     commandList[key] = '?'+value;
 })
+
+// cleaer on9 wiseman bigg letter commands
+let spamList = ['!join','>join','>NP','!NP','>np','!np','!Q','>Q','!q','>q','>FS','!FS','>fs','!fs','>P','!P','!p','>p','**Playing**','<:youtube:841353157489852487>','<:x2:814990341052432435>',':thumbsup:','🆘']
+
 
 
 client.on('ready', async ()=>{
@@ -39,8 +57,9 @@ client.on('ready', async ()=>{
     // })
 
     command(client, ['cc','clearchannel','CC','Clearchannel'], (message)=>{
+        
         filterlist = spamList.concat(commandList)
-        // console.log(filterlist)
+        console.log(filterlist)
         if (message.member.hasPermission('ADMINISTRATOR')){
             message.channel.messages.fetch().then((results) =>{
                 filterlist.forEach(startWord =>{
@@ -87,6 +106,15 @@ client.on('ready', async ()=>{
     
             // stanleycry.destroy();
         }
+    })
+    command(client, ['p','P','PLAY','play'], async message =>{
+        message.channel.messages.fetch().then((results) =>{
+            results.forEach(element => {
+                if (element.author.bot){
+                    console.log(element.content);
+                }
+            });
+        })
     })
 
 })
