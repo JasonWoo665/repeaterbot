@@ -5,8 +5,15 @@ const command = require('./command')
 const memberCount = require('./member-count')
 const eval = require('./eval')
 const play = require('discordjs-ytdl')
+//youtube searching functions
+var search = require('youtube-search');
+const youtubeSearchKey = process.env.YTKEY;
+var opts = {
+    maxResults: 10,
+    key: youtubeSearchKey
+};
 
-//youtube api
+// now useless youtube api 88 chicken
 // const YouTube = require("discord-youtube-api"); 
 // const youtube = new YouTube("google api key");
 
@@ -16,7 +23,7 @@ const prefix = process.env.PREFIX
 let commandMap = new Map();
 // formal name, aliases
 commandMap.set('join',['join','j','come'])
-commandMap.set('clearchannel',['cc','clearchannel','CC','Clearchannel'])
+commandMap.set('clearchannel',['c','cc','clearchannel','CC','Clearchannel'])
 commandMap.set('status',['status'])
 commandMap.set('cry',['cri','cry'])
 commandMap.set('play',['p','P','PLAY','play'])
@@ -33,7 +40,7 @@ commandList.forEach( (value, key) =>{
 })
 
 // cleaer on9 wiseman bigg letter commands
-let spamList = ['Commands available:','!join','>join','>NP','!NP','>np','!np','!Q','>Q','!q','>q','>FS','!FS','>fs','!fs','>P','!P','!p','>p','**Playing**','<:youtube:841353157489852487>','<:x2:814990341052432435>',':thumbsup:','🆘']
+let spamList = ['/','Commands available:','!join','>join','>NP','!NP','>np','!np','!Q','>Q','!q','>q','>FS','!FS','>fs','!fs','>P','!P','!p','>p','**Playing**','<:youtube:841353157489852487>','<:x2:814990341052432435>',':thumbsup:','🆘']
 
 
 
@@ -118,15 +125,46 @@ client.on('ready', async ()=>{
             // Only try to join the sender's voice channel if they are in one themselves
             if (message.member.voice.channel) {
                 const connection = await message.member.voice.channel.join();
-                const args = message.content.split(' ').slice(1)
+                var args = message.content.split(' ').slice(1)
+                console.log('args get = ',args)
                 const ytdl = require('ytdl-core')
-                connection.play(ytdl(args.join(" ")))
+                if (args.length==0){
+                    return;
+                }
+                // in case it is a keyword instead of youtube link
+                else if (!args[0].startsWith('http')){
+                    // convert args to string
+                    let searchString =''
+                    args.forEach(arg => {
+                        searchString = searchString + arg + ' '
+                    });
+                    searchString =searchString.substring(0, searchString.length - 1);
+                    search(searchString, opts, function(err, results) {
+                        if(err) return console.log(err);
+                        var doneloop = false
+                        results.forEach(searchResult => {
+                            if ((searchResult.kind == 'youtube#video') && (!doneloop)){
+                                console.log(searchResult.link);
+                                console.log(searchResult.kind);
+                                args = [searchResult.link];
+                                console.log(args)
+                                doneloop = true
+                            }
+                        });
+                        connection.play(ytdl(args.join(" ")))
+                    });
+                }
+                else{
+                    connection.play(ytdl(args.join(" ")))
+                }
             } else {
                 message.reply('You need to join a voice channel first!');
             }
         } catch(e){
             console.log(e)
-        }        
+        }       
+                
+          
     })
     command(client, commandMap.get('help'), async message =>{
         replymessage = 'Commands available:\n';

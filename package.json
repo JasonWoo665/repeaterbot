@@ -18,6 +18,7 @@
     "discordjs-ytdl": "^2.2.0",
     "dotenv": "^10.0.0",
     "ffmpeg": "0.0.4",
-    "ffmpeg-static": "^4.4.0"
+    "ffmpeg-static": "^4.4.0",
+    "youtube-search": "^1.1.6"
   }
 }
