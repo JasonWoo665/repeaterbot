@@ -4,20 +4,24 @@ require('dotenv').config();
 const command = require('./command')
 const memberCount = require('./member-count')
 const eval = require('./eval')
+const play = require('discordjs-ytdl')
 
 //youtube api
-const YouTube = require("discord-youtube-api"); 
-const youtube = new YouTube("google api key");
+// const YouTube = require("discord-youtube-api"); 
+// const youtube = new YouTube("google api key");
 
 
 const prefix = process.env.PREFIX
 
 let commandMap = new Map();
-commandMap.set(['join'],['join','j','come'])
-commandMap.set(['clearchannel'],['cc','clearchannel','CC','Clearchannel'])
-commandMap.set(['status'],['status'])
-commandMap.set(['cry'],['cri','cry'])
-commandMap.set(['play'],['p','P','PLAY','play'])
+// formal name, aliases
+commandMap.set('join',['join','j','come'])
+commandMap.set('clearchannel',['cc','clearchannel','CC','Clearchannel'])
+commandMap.set('status',['status'])
+commandMap.set('cry',['cri','cry'])
+commandMap.set('play',['p','P','PLAY','play'])
+commandMap.set('np',['np','NP'])
+commandMap.set('help',['help','HELP'])
 
 // group all commands into one list
 let commandList = []
@@ -29,7 +33,7 @@ commandList.forEach( (value, key) =>{
 })
 
 // cleaer on9 wiseman bigg letter commands
-let spamList = ['!join','>join','>NP','!NP','>np','!np','!Q','>Q','!q','>q','>FS','!FS','>fs','!fs','>P','!P','!p','>p','**Playing**','<:youtube:841353157489852487>','<:x2:814990341052432435>',':thumbsup:','🆘']
+let spamList = ['Commands available:','!join','>join','>NP','!NP','>np','!np','!Q','>Q','!q','>q','>FS','!FS','>fs','!fs','>P','!P','!p','>p','**Playing**','<:youtube:841353157489852487>','<:x2:814990341052432435>',':thumbsup:','🆘']
 
 
 
@@ -39,7 +43,7 @@ client.on('ready', async ()=>{
     // memberCount(client)
     eval(client)
 
-    command(client, ['join','j','come'], message =>{
+    command(client, commandMap.get('join'), message =>{
         if (message.member.voice.channel) {
             const connection = message.member.voice.channel.join();
             console.log('Connected to '+message.member.voice.channel.name+'!');
@@ -56,10 +60,9 @@ client.on('ready', async ()=>{
     //     })
     // })
 
-    command(client, ['cc','clearchannel','CC','Clearchannel'], (message)=>{
+    command(client, commandMap.get('clearchannel'), (message)=>{
         
         filterlist = spamList.concat(commandList)
-        console.log(filterlist)
         if (message.member.hasPermission('ADMINISTRATOR')){
             message.channel.messages.fetch().then((results) =>{
                 filterlist.forEach(startWord =>{
@@ -74,7 +77,7 @@ client.on('ready', async ()=>{
         }
     })
 
-    command(client, ['status'], message => {
+    command(client, commandMap.get('status'), message => {
         if (message.member.hasPermission('MANAGE_GUILD') || message.hasPermission('ADMINISTRATOR')) {
             message.channel.send('**You Can Replace This With a Custom Message Or Delete This Line**')
             const content = message.content.replace(`${prefix}status`, ' ')
@@ -88,7 +91,7 @@ client.on('ready', async ()=>{
         }else (message.channel.send("**Replace This With Error Message For People Without Perms (Or Delete This Line):**"))
     })
 
-    command(client, ['cri','cry'], async message =>{
+    command(client, commandMap.get('cry'), async message =>{
         message.delete();
         if (message.member.voice.channel) {
             const connection = await message.member.voice.channel.join();
@@ -107,16 +110,35 @@ client.on('ready', async ()=>{
             // stanleycry.destroy();
         }
     })
-    command(client, ['p','P','PLAY','play'], async message =>{
-        message.channel.messages.fetch().then((results) =>{
-            results.forEach(element => {
-                if (element.author.bot){
-                    console.log(element.content);
-                }
-            });
-        })
+    // can only play by url fk, i wanna play by keyword
+    command(client, commandMap.get('play'), async message =>{
+        try {
+            if (!message.guild) return;
+        
+            // Only try to join the sender's voice channel if they are in one themselves
+            if (message.member.voice.channel) {
+                const connection = await message.member.voice.channel.join();
+                const args = message.content.split(' ').slice(1)
+                const ytdl = require('ytdl-core')
+                connection.play(ytdl(args.join(" ")))
+            } else {
+                message.reply('You need to join a voice channel first!');
+            }
+        } catch(e){
+            console.log(e)
+        }        
     })
-
+    command(client, commandMap.get('help'), async message =>{
+        replymessage = 'Commands available:\n';
+        let i=1;
+        commandMap.forEach((key,element) => {
+            replymessage = replymessage + i.toString() + ". " + element + "\n";
+            i+=1;
+        });
+        replymessage = replymessage + "don't ask, just try it"
+        message.channel.send(replymessage)     
+    })
+    
 })
 
 client.login(process.env.DISCORDJS_BOT_TOKEN)
