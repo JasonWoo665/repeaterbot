@@ -26,11 +26,14 @@ let commandMap = new Map();
 commandMap.set('join',['join','j','come'])
 commandMap.set('clearchannel',['c','cc','clearchannel','CC','Clearchannel'])
 commandMap.set('status',['status'])
-commandMap.set('cry',['cri','cry'])
+commandMap.set('cry',['cri','cry','CRI','CRY'])
+commandMap.set('cry2',['cri2','cry2','CRI2','CRY2'])
+commandMap.set('offensemode',['offensemode','offense','OFFENSE','OFFENSEMODE'])
 commandMap.set('play',['p','P','PLAY','play'])
 commandMap.set('np',['np','NP'])
 commandMap.set('help',['help','HELP'])
 commandMap.set('skip',['skip','fs','s','FS','S','SKIP'])
+commandMap.set('cry.gif',['cri.gif','cry.gif','crygif','crigif','cg','CRIGIF'])
 
 // group all commands into one list
 let commandList = []
@@ -42,7 +45,7 @@ commandList.forEach( (value, key) =>{
 })
 
 // cleaer on9 wiseman bigg letter commands
-let spamList = ['skipped ✓','ahoy','now playing: ','/','Commands available:','!join','>join','>NP','!NP','>np','!np','!Q','>Q','!q','>q','>FS','!FS','>fs','!fs','>P','!P','!p','>p','**Playing**','<:youtube:841353157489852487>','<:x2:814990341052432435>',':thumbsup:','🆘']
+let spamList = ['？','！','skipped ✓','ahoy','now playing: ','/','Commands available:','!join','>join','>NP','!NP','>np','!np','!Q','>Q','!q','>q','>FS','!FS','>fs','!fs','>P','!P','!p','>p','**Playing**','<:youtube:841353157489852487>','<:x2:814990341052432435>',':thumbsup:','🆘']
 
 
 
@@ -119,6 +122,20 @@ client.on('ready', async ()=>{
             // stanleycry.destroy();
         }
     })
+    command(client, commandMap.get('offensemode'), async message =>{
+        message.delete();
+        if (message.member.voice.channel) {
+            const connection = await message.member.voice.channel.join();
+            connection.play('./source/stanleyattack.mp3');
+        }
+    })
+    command(client, commandMap.get('cry2'), async message =>{
+        message.delete();
+        if (message.member.voice.channel) {
+            const connection = await message.member.voice.channel.join();
+            connection.play('./source/stanleycri2.mp3');
+        }
+    })
     command(client, commandMap.get('play'), async message =>{
         try {
             if (!message.guild) return;
@@ -173,6 +190,9 @@ client.on('ready', async ()=>{
         });
         replymessage = replymessage + "don't ask, just try it"
         message.channel.send(replymessage)     
+    })
+    command(client, commandMap.get('cry.gif'), message =>{
+        message.channel.send({ files: ["./source/crigif.gif"]});
     })
 })
 
