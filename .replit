@@ -1,0 +1,10 @@
+
+const mySecret = process.env['YTKEY']
+
+const mySecret = process.env['DISCORDJS_BOT_TOKEN']
+
+const mySecret = process.env['PREFIX']
+
+
+language = "nodejs"
+run = ""
