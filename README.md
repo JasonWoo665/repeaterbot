@@ -5,6 +5,12 @@ A discord bot deployed inside repl.it
  - The list of MP3s playable by the bot can be seen in [this website](https://repeaterbot.jasonwoo665.repl.co)
  - The repl.it repl is [here](https://replit.com/@JasonWoo665/repeaterbot#index.js)
 
+## what is this?
+
+This is a discord bot that can prune useless commands from any bots hourly
+and play some musics in youtube given a youtube link.
+It can also play some short customized MP3s.
+
 ## Usage
 
 The bot's prefix is "?", you can always type "?help" to check the most up to date commands.
